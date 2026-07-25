@@ -7,7 +7,7 @@ set -eu
 HOME="${HOME:-/home/${USER:?USER and HOME unset}}"
 timestamp=$(date +%Y%m%dT%H%M%S)
 dest_dir="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
-archive_name="user.${USER:-$(id -un)}.dotfiles.${timestamp}.tar"
+archive_name="user_${USER:-$(id -un)}_dotfiles_${timestamp}.tar"
 archive_path="$dest_dir/$archive_name"
 rel_home="${HOME#/}"
 
