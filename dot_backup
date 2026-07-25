@@ -1,0 +1,49 @@
+#!/bin/sh
+# Backup home-directory dotfiles to a timestamped tar on Desktop.
+# Heavy/cache paths are excluded at create time via an in-script list.
+
+set -eu
+
+HOME="${HOME:-/home/${USER:?USER and HOME unset}}"
+timestamp=$(date +%Y%m%dT%H%M%S)
+dest_dir="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
+archive_name="user.${USER:-$(id -un)}.dotfiles.${timestamp}.tar"
+archive_path="$dest_dir/$archive_name"
+rel_home="${HOME#/}"
+
+[ -d "$dest_dir" ] || {
+	printf 'missing dest: %s\n' "$dest_dir" >&2
+	exit 1
+}
+
+list_file=$(mktemp)
+exclude_file=$(mktemp)
+trap 'rm -f "$list_file" "$exclude_file"' EXIT
+
+# Members as home/user/... (no leading /) for stable --exclude matching.
+find "$HOME" -maxdepth 1 -name '.*' -print0 |
+	sed -z 's|^/||' >"$list_file"
+
+cat >"$exclude_file" <<EOF
+$rel_home/.cache
+$rel_home/.var/app
+$rel_home/.mozilla
+$rel_home/.local/share/Trash
+$rel_home/.local/share/akonadi
+$rel_home/.local/share/okular/docdata
+$rel_home/.config/google-chrome
+$rel_home/.local/share/klipper/data
+$rel_home/.local/share/waydroid
+EOF
+
+printf '\n\tCreating archive (exclusions applied at write time)...\n'
+printf '\n\tExcluding:\n'
+cat "$exclude_file"
+
+tar -C / --null -cf "$archive_path" \
+	--exclude-from="$exclude_file" \
+	-T "$list_file"
+
+printf '\n\tCreated: %s (%s)\n' \
+	"$archive_name" \
+	"$(du -h "$archive_path" | cut -f1)"
