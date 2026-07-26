@@ -4,6 +4,8 @@ Backs up top-level home directory dotfiles (`.config`, `.local`, shell rc files,
 
 Heavy or disposable trees (caches, browser data, Trash, and similar) are excluded at create time.
 
+The purpose of this tool is to make a backup of just the user configuration files. 
+
 ## Requirements
 
 - POSIX `sh`
