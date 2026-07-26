@@ -68,7 +68,7 @@ tar -tf ~/Desktop/user_${USER}_dotfiles_*.tar | less
 Extract into `/` (paths are rooted at `home/...`):
 
 ```sh
-sudo tar -C / -xvf ~/Desktop/user_${USER}_dotfiles_YYYYMMDDTHHMMSS.tar
+tar -C / -xvf ~/Desktop/user_${USER}_dotfiles_YYYYMMDDTHHMMSS.tar
 ```
 
 Or extract under a staging directory:
